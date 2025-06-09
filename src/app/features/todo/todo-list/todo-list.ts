@@ -17,7 +17,8 @@ import _ from 'lodash';
 import { TodoItemComponent } from '../../../shared/components/todo-item/todo-item';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { TodoItem } from '../../../core/models/todo-item.model';
-import { ApiService } from '../../../core/services/api';
+import { TodoFirestoreService } from '../../../core/services/todo-firestore.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
@@ -43,11 +44,7 @@ const PRIORITY_ORDER: Record<TodoPriority, number> = {
   styleUrls: ['./todo-list.scss'],
 })
 export class TodoListComponent {
-  todos = signal<TodoItem[]>([
-    { id: 1, title: '學習 Angular 20', completed: false, tag: TodoTag.Work, priority: TodoPriority.High },
-    { id: 2, title: '整合 Angular Material', completed: false, tag: TodoTag.Personal, priority: TodoPriority.Medium },
-    { id: 3, title: '完成 CRUD 功能', completed: false, tag: TodoTag.Family, priority: TodoPriority.Low },
-  ]);
+  todos = signal<TodoItem[]>([]);
   editTitle = signal<string>('');
   editTag = signal<TodoTag>(TodoTag.Work);
   editPriority = signal<TodoPriority>(TodoPriority.Medium);
@@ -59,9 +56,15 @@ export class TodoListComponent {
     _.sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
   );
 
-  private apiService = inject(ApiService);
+  private firestore = inject(TodoFirestoreService);
+  private toast = inject(ToastService);
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) {}
+  constructor() {
+    this.firestore.getTodos().subscribe((todos: TodoItem[]) => {
+      this.todos.set(todos);
+    });
+  }
 
   toggleCompleted(todo: TodoItem) {
     this.todos.update(list => list.map(t => t.id === todo.id ? { ...t, completed: !t.completed } : t));
@@ -74,8 +77,9 @@ export class TodoListComponent {
     });
     dialogRef.afterClosed().subscribe((result: Omit<TodoItem, 'id'> | undefined) => {
       if (result) {
-        this.todos.update(list => [...list, { ...result, id: Date.now(), completed: false }]);
-        this.apiService.showSuccess('新增項目成功');
+        this.firestore.addTodo(result).then(() => {
+          this.toast.success('新增項目成功');
+        });
       }
     });
   }
@@ -88,7 +92,9 @@ export class TodoListComponent {
     });
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.todos.update(list => list.filter(t => t.id !== todo.id));
+        this.firestore.deleteTodo(String(todo.id)).then(() => {
+          this.toast.success('刪除項目成功');
+        });
       }
     });
   }
@@ -123,11 +129,13 @@ export class TodoListComponent {
   }
 
   saveEditFromChild(todo: TodoItem, event: {title: string, tag: TodoTag, priority: TodoPriority}) {
-    this.todos.update(list => list.map(t =>
-      t.id === todo.id
-        ? { ...t, title: event.title, tag: event.tag, priority: event.priority, editing: false }
-        : t
-    ));
-    this.apiService.showSuccess('編輯項目成功');
+    this.firestore.updateTodo(String(todo.id), {
+      title: event.title,
+      tag: event.tag,
+      priority: event.priority,
+      editing: false
+    }).then(() => {
+      this.toast.success('編輯項目成功');
+    });
   }
 }
