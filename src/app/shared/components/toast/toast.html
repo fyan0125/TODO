@@ -1,0 +1,9 @@
+<div class="toast-container">
+  @for (msg of messages(); track msg) {
+    <div class="toast toast--{{ msg.type }}">
+      <button class="toast__close" (click)="toast.remove(msg)">&times;</button>
+      <strong *ngIf="msg.title">{{ msg.title }}</strong>
+      <span>{{ msg.message }}</span>
+    </div>
+  }
+</div>
