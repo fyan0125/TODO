@@ -28,3 +28,29 @@
   text-decoration: none;
   margin-left: 4px;
 }
+.switch-link.decorated {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.switch-link.decorated span {
+  position: relative;
+  padding: 0 12px;
+  background: #fff;
+  z-index: 1;
+}
+.switch-link.decorated::before,
+.switch-link.decorated::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+  display: block;
+  z-index: 0;
+}
+.google-signin-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
