@@ -19,6 +19,7 @@ import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { TodoItem } from '../../../core/models/todo-item.model';
 import { TodoFirestoreService } from '../../../core/services/todo-firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
@@ -39,7 +40,7 @@ const PRIORITY_ORDER: Record<TodoPriority, number> = {
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [MatListModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, FormsModule, TodoItemComponent],
+  imports: [MatListModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, FormsModule, TodoItemComponent, MatPaginatorModule],
   templateUrl: './todo-list.html',
   styleUrls: ['./todo-list.scss'],
 })
@@ -55,6 +56,35 @@ export class TodoListComponent {
   sortedCompletedTodos = computed(() =>
     _.sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
   );
+
+  pageSize = 10;
+  uncompletedPageIndex = signal(0);
+  completedPageIndex = signal(0);
+
+  pagedUncompletedTodos = computed(() => {
+    const all = this.sortedUncompletedTodos();
+    const start = this.uncompletedPageIndex() * this.pageSize;
+    return all.slice(start, start + this.pageSize);
+  });
+  pagedCompletedTodos = computed(() => {
+    const all = this.sortedCompletedTodos();
+    const start = this.completedPageIndex() * this.pageSize;
+    return all.slice(start, start + this.pageSize);
+  });
+
+  get uncompletedTotalLength() {
+    return this.sortedUncompletedTodos().length;
+  }
+  get completedTotalLength() {
+    return this.sortedCompletedTodos().length;
+  }
+
+  onUncompletedPage(event: { pageIndex: number }) {
+    this.uncompletedPageIndex.set(event.pageIndex);
+  }
+  onCompletedPage(event: { pageIndex: number }) {
+    this.completedPageIndex.set(event.pageIndex);
+  }
 
   private firestore = inject(TodoFirestoreService);
   private toast = inject(ToastService);

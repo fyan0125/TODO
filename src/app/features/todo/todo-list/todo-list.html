@@ -9,7 +9,7 @@
     <mat-card class="todo-card">
       <mat-card-title class="todo-card__title">待辦事項</mat-card-title>
       <mat-list>
-        @for (todo of sortedUncompletedTodos(); track todo.id) {
+        @for (todo of pagedUncompletedTodos(); track todo.id) {
           <app-todo-item
             [todo]="todo"
             [tagColor]="getTagColor(todo.tag)"
@@ -21,13 +21,19 @@
           </app-todo-item>
         }
       </mat-list>
+      <mat-paginator
+        [length]="uncompletedTotalLength"
+        [pageSize]="pageSize"
+        [pageIndex]="uncompletedPageIndex()"
+        (page)="onUncompletedPage($event)">
+      </mat-paginator>
     </mat-card>
   </section>
   <section class="todo-section">
     <mat-card class="todo-card">
       <mat-card-title class="todo-card__title">已完成</mat-card-title>
       <mat-list>
-        @for (todo of sortedCompletedTodos(); track todo.id) {
+        @for (todo of pagedCompletedTodos(); track todo.id) {
           <app-todo-item
             [todo]="todo"
             [tagColor]="getTagColor(todo.tag)"
@@ -39,6 +45,12 @@
           </app-todo-item>
         }
       </mat-list>
+      <mat-paginator
+        [length]="completedTotalLength"
+        [pageSize]="pageSize"
+        [pageIndex]="completedPageIndex()"
+        (page)="onCompletedPage($event)">
+      </mat-paginator>
     </mat-card>
   </section>
 </div>
