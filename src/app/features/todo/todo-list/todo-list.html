@@ -1,13 +1,13 @@
-<header class="todo-header">
-  <h2 class="todo-header__title">TODO List</h2>
-  <button mat-raised-button color="primary" (click)="openAddDialog()" class="todo-header__add-btn">
-    <mat-icon>add</mat-icon> 新增
-  </button>
-</header>
+<app-header />
 <div class="todo-layout">
   <section class="todo-section">
     <mat-card class="todo-card">
-      <mat-card-title class="todo-card__title">待辦事項</mat-card-title>
+      <div class="todo-card__title-row">
+        <mat-card-title class="todo-card__title">待辦事項</mat-card-title>
+        <button mat-raised-button color="primary" (click)="openAddDialog()" class="todo-header__add-btn">
+          <mat-icon>add</mat-icon> 新增
+        </button>
+      </div>
       <mat-list>
         @for (todo of pagedUncompletedTodos(); track todo.id) {
           <app-todo-item

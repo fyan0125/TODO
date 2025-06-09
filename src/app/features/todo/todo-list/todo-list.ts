@@ -20,13 +20,17 @@ import { TodoItem } from '../../../core/models/todo-item.model';
 import { TodoFirestoreService } from '../../../core/services/todo-firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { Header } from '../../../shared/components/header/header';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
   [TodoTag.Personal]: 'accent',
   [TodoTag.Family]: 'warn',
 };
-const PRIORITY_COLORS: Record<TodoPriority, 'primary' | 'accent' | 'warn' | 'default'> = {
+const PRIORITY_COLORS: Record<
+  TodoPriority,
+  'primary' | 'accent' | 'warn' | 'default'
+> = {
   [TodoPriority.High]: 'warn',
   [TodoPriority.Medium]: 'primary',
   [TodoPriority.Low]: 'default',
@@ -40,7 +44,22 @@ const PRIORITY_ORDER: Record<TodoPriority, number> = {
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [MatListModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, FormsModule, TodoItemComponent, MatPaginatorModule],
+  imports: [
+    MatListModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    FormsModule,
+    TodoItemComponent,
+    MatPaginatorModule,
+    Header,
+  ],
   templateUrl: './todo-list.html',
   styleUrls: ['./todo-list.scss'],
 })
@@ -51,10 +70,16 @@ export class TodoListComponent {
   editPriority = signal<TodoPriority>(TodoPriority.Medium);
 
   sortedUncompletedTodos = computed(() =>
-    sortBy(this.todos().filter((t: TodoItem) => !t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
+    sortBy(
+      this.todos().filter((t: TodoItem) => !t.completed),
+      (t: TodoItem) => PRIORITY_ORDER[t.priority]
+    )
   );
   sortedCompletedTodos = computed(() =>
-    sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
+    sortBy(
+      this.todos().filter((t: TodoItem) => t.completed),
+      (t: TodoItem) => PRIORITY_ORDER[t.priority]
+    )
   );
 
   pageSize = 10;
@@ -97,7 +122,11 @@ export class TodoListComponent {
   }
 
   toggleCompleted(todo: TodoItem) {
-    this.todos.update(list => list.map(t => t.id === todo.id ? { ...t, completed: !t.completed } : t));
+    this.todos.update((list) =>
+      list.map((t) =>
+        t.id === todo.id ? { ...t, completed: !t.completed } : t
+      )
+    );
   }
 
   openAddDialog() {
@@ -105,13 +134,15 @@ export class TodoListComponent {
       width: '400px',
       panelClass: 'custom-dialog',
     });
-    dialogRef.afterClosed().subscribe((result: Omit<TodoItem, 'id'> | undefined) => {
-      if (result) {
-        this.firestore.addTodo(result).then(() => {
-          this.toast.success('新增項目成功');
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .subscribe((result: Omit<TodoItem, 'id'> | undefined) => {
+        if (result) {
+          this.firestore.addTodo(result).then(() => {
+            this.toast.success('新增項目成功');
+          });
+        }
+      });
   }
 
   openDeleteDialog(todo: TodoItem) {
@@ -130,7 +161,9 @@ export class TodoListComponent {
   }
 
   startEdit(todo: TodoItem) {
-    this.todos.update(list => list.map(t => ({ ...t, editing: t.id === todo.id })));
+    this.todos.update((list) =>
+      list.map((t) => ({ ...t, editing: t.id === todo.id }))
+    );
     this.editTitle.set(todo.title);
     this.editTag.set(todo.tag);
     this.editPriority.set(todo.priority as TodoPriority);
@@ -138,34 +171,55 @@ export class TodoListComponent {
 
   saveEdit(todo: TodoItem) {
     if (this.editTitle().trim()) {
-      this.todos.update(list => list.map(t =>
-        t.id === todo.id
-          ? { ...t, title: this.editTitle(), tag: this.editTag(), priority: this.editPriority(), editing: false }
-          : t
-      ));
+      this.todos.update((list) =>
+        list.map((t) =>
+          t.id === todo.id
+            ? {
+                ...t,
+                title: this.editTitle(),
+                tag: this.editTag(),
+                priority: this.editPriority(),
+                editing: false,
+              }
+            : t
+        )
+      );
     }
   }
 
   cancelEdit(todo: TodoItem) {
-    this.todos.update(list => list.map(t => t.id === todo.id ? { ...t, editing: false } : t));
+    this.todos.update((list) =>
+      list.map((t) => (t.id === todo.id ? { ...t, editing: false } : t))
+    );
   }
 
   getTagColor(tag: TodoTag): 'primary' | 'accent' | 'warn' | 'default' {
     return TAG_COLORS[tag] as 'primary' | 'accent' | 'warn' | 'default';
   }
 
-  getPriorityColor(priority: TodoPriority): 'primary' | 'accent' | 'warn' | 'default' {
-    return PRIORITY_COLORS[priority] as 'primary' | 'accent' | 'warn' | 'default';
+  getPriorityColor(
+    priority: TodoPriority
+  ): 'primary' | 'accent' | 'warn' | 'default' {
+    return PRIORITY_COLORS[priority] as
+      | 'primary'
+      | 'accent'
+      | 'warn'
+      | 'default';
   }
 
-  saveEditFromChild(todo: TodoItem, event: {title: string, tag: TodoTag, priority: TodoPriority}) {
-    this.firestore.updateTodo(String(todo.id), {
-      title: event.title,
-      tag: event.tag,
-      priority: event.priority,
-      editing: false
-    }).then(() => {
-      this.toast.success('編輯項目成功');
-    });
+  saveEditFromChild(
+    todo: TodoItem,
+    event: { title: string; tag: TodoTag; priority: TodoPriority }
+  ) {
+    this.firestore
+      .updateTodo(String(todo.id), {
+        title: event.title,
+        tag: event.tag,
+        priority: event.priority,
+        editing: false,
+      })
+      .then(() => {
+        this.toast.success('編輯項目成功');
+      });
   }
 }

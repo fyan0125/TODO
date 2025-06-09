@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideFirebaseApp, initializeApp, FirebaseApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 import { routes } from './app.routes';
 
 const firebaseConfig = {
@@ -27,6 +28,10 @@ export const appConfig: ApplicationConfig = {
     provideFirestore(() => {
       const firebaseApp = inject(FirebaseApp); // 注入 FirebaseApp 實例
       return getFirestore(firebaseApp, 'todo');
+    }),
+    provideAuth(() => {
+      const firebaseApp = inject(FirebaseApp);
+      return getAuth(firebaseApp);
     })
   ]
 };

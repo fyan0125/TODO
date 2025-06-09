@@ -13,6 +13,13 @@
   }
 }
 
+.todo-card__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 .todo-layout {
   display: flex;
   gap: 32px;

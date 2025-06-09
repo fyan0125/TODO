@@ -1,0 +1,17 @@
+<div class="auth-container">
+  <h2>登入</h2>
+  <form #loginForm="ngForm" (ngSubmit)="onLogin()">
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" name="email" [(ngModel)]="email" required />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>密碼</mat-label>
+      <input matInput type="password" name="password" [(ngModel)]="password" required />
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">登入</button>
+  </form>
+  <div class="switch-link">
+    還沒有帳號？<a routerLink="/register">註冊</a>
+  </div>
+</div>
