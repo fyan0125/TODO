@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,9 @@ import _ from 'lodash';
 import { TodoItemComponent } from '../../../shared/components/todo-item/todo-item';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { TodoItem } from '../../../core/models/todo-item.model';
+import { TodoFirestoreService } from '../../../core/services/todo-firestore.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
@@ -37,16 +40,12 @@ const PRIORITY_ORDER: Record<TodoPriority, number> = {
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [MatListModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, FormsModule, TodoItemComponent],
+  imports: [MatListModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, FormsModule, TodoItemComponent, MatPaginatorModule],
   templateUrl: './todo-list.html',
   styleUrls: ['./todo-list.scss'],
 })
 export class TodoListComponent {
-  todos = signal<TodoItem[]>([
-    { id: 1, title: '學習 Angular 20', completed: false, tag: TodoTag.Work, priority: TodoPriority.High },
-    { id: 2, title: '整合 Angular Material', completed: false, tag: TodoTag.Personal, priority: TodoPriority.Medium },
-    { id: 3, title: '完成 CRUD 功能', completed: false, tag: TodoTag.Family, priority: TodoPriority.Low },
-  ]);
+  todos = signal<TodoItem[]>([]);
   editTitle = signal<string>('');
   editTag = signal<TodoTag>(TodoTag.Work);
   editPriority = signal<TodoPriority>(TodoPriority.Medium);
@@ -58,7 +57,44 @@ export class TodoListComponent {
     _.sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
   );
 
-  constructor(private dialog: MatDialog) {}
+  pageSize = 10;
+  uncompletedPageIndex = signal(0);
+  completedPageIndex = signal(0);
+
+  pagedUncompletedTodos = computed(() => {
+    const all = this.sortedUncompletedTodos();
+    const start = this.uncompletedPageIndex() * this.pageSize;
+    return all.slice(start, start + this.pageSize);
+  });
+  pagedCompletedTodos = computed(() => {
+    const all = this.sortedCompletedTodos();
+    const start = this.completedPageIndex() * this.pageSize;
+    return all.slice(start, start + this.pageSize);
+  });
+
+  get uncompletedTotalLength() {
+    return this.sortedUncompletedTodos().length;
+  }
+  get completedTotalLength() {
+    return this.sortedCompletedTodos().length;
+  }
+
+  onUncompletedPage(event: { pageIndex: number }) {
+    this.uncompletedPageIndex.set(event.pageIndex);
+  }
+  onCompletedPage(event: { pageIndex: number }) {
+    this.completedPageIndex.set(event.pageIndex);
+  }
+
+  private firestore = inject(TodoFirestoreService);
+  private toast = inject(ToastService);
+  private dialog = inject(MatDialog);
+
+  constructor() {
+    this.firestore.getTodos().subscribe((todos: TodoItem[]) => {
+      this.todos.set(todos);
+    });
+  }
 
   toggleCompleted(todo: TodoItem) {
     this.todos.update(list => list.map(t => t.id === todo.id ? { ...t, completed: !t.completed } : t));
@@ -71,7 +107,9 @@ export class TodoListComponent {
     });
     dialogRef.afterClosed().subscribe((result: Omit<TodoItem, 'id'> | undefined) => {
       if (result) {
-        this.todos.update(list => [...list, { ...result, id: Date.now(), completed: false }]);
+        this.firestore.addTodo(result).then(() => {
+          this.toast.success('新增項目成功');
+        });
       }
     });
   }
@@ -84,7 +122,9 @@ export class TodoListComponent {
     });
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.todos.update(list => list.filter(t => t.id !== todo.id));
+        this.firestore.deleteTodo(String(todo.id)).then(() => {
+          this.toast.success('刪除項目成功');
+        });
       }
     });
   }
@@ -119,10 +159,13 @@ export class TodoListComponent {
   }
 
   saveEditFromChild(todo: TodoItem, event: {title: string, tag: TodoTag, priority: TodoPriority}) {
-    this.todos.update(list => list.map(t =>
-      t.id === todo.id
-        ? { ...t, title: event.title, tag: event.tag, priority: event.priority, editing: false }
-        : t
-    ));
+    this.firestore.updateTodo(String(todo.id), {
+      title: event.title,
+      tag: event.tag,
+      priority: event.priority,
+      editing: false
+    }).then(() => {
+      this.toast.success('編輯項目成功');
+    });
   }
 }
