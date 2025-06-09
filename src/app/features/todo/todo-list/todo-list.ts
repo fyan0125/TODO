@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { TodoItemComponent } from '../../../shared/components/todo-item/todo-item';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { TodoItem } from '../../../core/models/todo-item.model';
+import { ApiService } from '../../../core/services/api';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
@@ -58,6 +59,8 @@ export class TodoListComponent {
     _.sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
   );
 
+  private apiService = inject(ApiService);
+
   constructor(private dialog: MatDialog) {}
 
   toggleCompleted(todo: TodoItem) {
@@ -72,6 +75,7 @@ export class TodoListComponent {
     dialogRef.afterClosed().subscribe((result: Omit<TodoItem, 'id'> | undefined) => {
       if (result) {
         this.todos.update(list => [...list, { ...result, id: Date.now(), completed: false }]);
+        this.apiService.showSuccess('新增項目成功');
       }
     });
   }
@@ -124,5 +128,6 @@ export class TodoListComponent {
         ? { ...t, title: event.title, tag: event.tag, priority: event.priority, editing: false }
         : t
     ));
+    this.apiService.showSuccess('編輯項目成功');
   }
 }
