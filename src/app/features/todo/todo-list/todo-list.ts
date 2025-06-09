@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AddTodoDialog } from '../add-todo-dialog/add-todo-dialog';
 import { ConfirmDeleteDialog } from '../confirm-delete-dialog/confirm-delete-dialog';
-import _ from 'lodash';
+import sortBy from 'lodash-es/sortBy';
 import { TodoItemComponent } from '../../../shared/components/todo-item/todo-item';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { TodoItem } from '../../../core/models/todo-item.model';
@@ -51,10 +51,10 @@ export class TodoListComponent {
   editPriority = signal<TodoPriority>(TodoPriority.Medium);
 
   sortedUncompletedTodos = computed(() =>
-    _.sortBy(this.todos().filter((t: TodoItem) => !t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
+    sortBy(this.todos().filter((t: TodoItem) => !t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
   );
   sortedCompletedTodos = computed(() =>
-    _.sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
+    sortBy(this.todos().filter((t: TodoItem) => t.completed), (t: TodoItem) => PRIORITY_ORDER[t.priority])
   );
 
   pageSize = 10;
