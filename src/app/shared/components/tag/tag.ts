@@ -1,0 +1,13 @@
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-tag',
+  standalone: true,
+  templateUrl: './tag.html',
+  styleUrls: ['./tag.scss']
+})
+export class TagComponent {
+  text = input<string>('');
+  color = input<'primary' | 'accent' | 'warn' | 'default'>('default');
+  size = input<'sm' | 'md' | 'lg'>('md');
+}

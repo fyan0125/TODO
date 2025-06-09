@@ -1,0 +1,44 @@
+<header class="todo-header">
+  <h2 class="todo-header__title">TODO List</h2>
+  <button mat-raised-button color="primary" (click)="openAddDialog()" class="todo-header__add-btn">
+    <mat-icon>add</mat-icon> 新增
+  </button>
+</header>
+<div class="todo-layout">
+  <section class="todo-section">
+    <mat-card class="todo-card">
+      <mat-card-title class="todo-card__title">待辦事項</mat-card-title>
+      <mat-list>
+        @for (todo of sortedUncompletedTodos(); track todo.id) {
+          <app-todo-item
+            [todo]="todo"
+            [tagColor]="getTagColor(todo.tag)"
+            [priorityColor]="getPriorityColor(todo.priority)"
+            (onToggleCompleted)="toggleCompleted(todo)"
+            (onDelete)="openDeleteDialog(todo)"
+            (onSave)="saveEditFromChild(todo, $event)"
+            class="todo-item">
+          </app-todo-item>
+        }
+      </mat-list>
+    </mat-card>
+  </section>
+  <section class="todo-section">
+    <mat-card class="todo-card">
+      <mat-card-title class="todo-card__title">已完成</mat-card-title>
+      <mat-list>
+        @for (todo of sortedCompletedTodos(); track todo.id) {
+          <app-todo-item
+            [todo]="todo"
+            [tagColor]="getTagColor(todo.tag)"
+            [priorityColor]="getPriorityColor(todo.priority)"
+            (onToggleCompleted)="toggleCompleted(todo)"
+            (onDelete)="openDeleteDialog(todo)"
+            (onSave)="saveEditFromChild(todo, $event)"
+            class="todo-item">
+          </app-todo-item>
+        }
+      </mat-list>
+    </mat-card>
+  </section>
+</div>
