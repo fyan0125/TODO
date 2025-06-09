@@ -9,34 +9,16 @@
     <mat-card class="todo-card">
       <mat-card-title class="todo-card__title">待辦事項</mat-card-title>
       <mat-list>
-        @for (todo of sortedUncompletedTodos; track todo.id) {
-          <mat-list-item class="todo-item">
-            <div class="todo-item__content">
-            <mat-checkbox [checked]="todo.completed" (change)="toggleCompleted(todo)"></mat-checkbox>
-            @if (!todo.editing) {
-              <span class="todo-item__title">{{ todo.title }}</span>
-              <app-tag class="todo-item__chip" [text]="todo.tag" [color]="getTagColor(todo.tag)" size="sm"></app-tag>
-              <app-tag class="todo-item__priority" [text]="todo.priority" [color]="getPriorityColor(todo.priority)" size="sm"></app-tag>
-              <button mat-icon-button color="primary" (click)="startEdit(todo)" class="todo-item__edit-btn">
-                <mat-icon>edit</mat-icon>
-              </button>
-            }
-            @if (todo.editing) {
-              <mat-form-field class="todo-item__edit-field">
-                <input matInput [(ngModel)]="editTitle" />
-              </mat-form-field>
-              <button mat-icon-button color="primary" (click)="saveEdit(todo)" class="todo-item__save-btn">
-                <mat-icon>check</mat-icon>
-              </button>
-              <button mat-icon-button (click)="cancelEdit(todo)" class="todo-item__cancel-btn">
-                <mat-icon>close</mat-icon>
-              </button>
-            }
-            <button mat-icon-button color="warn" (click)="openDeleteDialog(todo)" class="todo-item__delete-btn">
-              <mat-icon>delete</mat-icon>
-            </button>
-            </div>
-          </mat-list-item>
+        @for (todo of sortedUncompletedTodos(); track todo.id) {
+          <app-todo-item
+            [todo]="todo"
+            [tagColor]="getTagColor(todo.tag)"
+            [priorityColor]="getPriorityColor(todo.priority)"
+            (onToggleCompleted)="toggleCompleted(todo)"
+            (onDelete)="openDeleteDialog(todo)"
+            (onSave)="saveEditFromChild(todo, $event)"
+            class="todo-item">
+          </app-todo-item>
         }
       </mat-list>
     </mat-card>
@@ -45,18 +27,16 @@
     <mat-card class="todo-card">
       <mat-card-title class="todo-card__title">已完成</mat-card-title>
       <mat-list>
-        @for (todo of sortedCompletedTodos; track todo.id) {
-          <mat-list-item class="todo-item">
-            <div class="todo-item__content">
-            <mat-checkbox [checked]="todo.completed" (change)="toggleCompleted(todo)"></mat-checkbox>
-            <span class="todo-item__title">{{ todo.title }}</span>
-            <app-tag class="todo-item__chip" [text]="todo.tag" [color]="getTagColor(todo.tag)" size="sm"></app-tag>
-            <app-tag class="todo-item__priority" [text]="todo.priority" [color]="getPriorityColor(todo.priority)" size="sm"></app-tag>
-            <button mat-icon-button color="warn" (click)="openDeleteDialog(todo)" class="todo-item__delete-btn">
-              <mat-icon>delete</mat-icon>
-            </button>
-            </div>
-          </mat-list-item>
+        @for (todo of sortedCompletedTodos(); track todo.id) {
+          <app-todo-item
+            [todo]="todo"
+            [tagColor]="getTagColor(todo.tag)"
+            [priorityColor]="getPriorityColor(todo.priority)"
+            (onToggleCompleted)="toggleCompleted(todo)"
+            (onDelete)="openDeleteDialog(todo)"
+            (onSave)="saveEditFromChild(todo, $event)"
+            class="todo-item">
+          </app-todo-item>
         }
       </mat-list>
     </mat-card>

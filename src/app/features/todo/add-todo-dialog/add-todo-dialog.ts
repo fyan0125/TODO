@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 
 @Component({
   selector: 'app-add-todo-dialog',
@@ -14,15 +15,15 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./add-todo-dialog.scss']
 })
 export class AddTodoDialog {
-  title = '';
-  tag: '工作' | '個人' | '家庭' = '工作';
-  priority: '高' | '中' | '低' = '中';
+  title = signal('');
+  tag = signal<TodoTag>(TodoTag.Work);
+  priority = signal<TodoPriority>(TodoPriority.Medium);
 
-  constructor(private dialogRef: MatDialogRef<AddTodoDialog>) {}
+  private dialogRef = inject(MatDialogRef<AddTodoDialog>);
 
   submit() {
-    if (this.title.trim()) {
-      this.dialogRef.close({ title: this.title, tag: this.tag, priority: this.priority });
+    if (this.title().trim()) {
+      this.dialogRef.close({ title: this.title(), tag: this.tag(), priority: this.priority() });
     }
   }
 
