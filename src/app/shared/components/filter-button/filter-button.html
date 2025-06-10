@@ -1,0 +1,14 @@
+<button
+  mat-raised-button
+  [color]="color"
+  [disabled]="disabled"
+  (click)="clickBtn.emit()"
+  class="filter-btn raised"
+  [class.raised]="selected"
+  [class.outlined]="!selected"
+>
+  @if (icon) {
+    <mat-icon>{{ icon }}</mat-icon>
+  }
+  {{ label }}
+</button>

@@ -2,7 +2,7 @@
   <mat-checkbox [checked]="todo().completed" (change)="toggleCompleted()"></mat-checkbox>
   @if (!editMode()) {
     <span class="todo-item__title">{{ todo().title }}</span>
-    <app-tag class="todo-item__chip" [text]="todo().tag" [color]="tagColor()" size="sm"></app-tag>
+    <app-tag class="todo-item__chip" [text]="todo().tag" color="default" size="sm"></app-tag>
     <app-tag class="todo-item__priority" [text]="todo().priority" [color]="priorityColor()" size="sm"></app-tag>
     <button mat-icon-button color="primary" (click)="startEdit()" class="todo-item__edit-btn">
       <mat-icon>edit</mat-icon>

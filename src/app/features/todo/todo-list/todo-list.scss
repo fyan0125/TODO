@@ -1,23 +1,14 @@
-.todo-header {
+.todo-card__title-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  &__title {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 600;
-  }
-  &__add-btn {
-    min-width: 100px;
-  }
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .todo-layout {
   display: flex;
   gap: 32px;
   align-items: flex-start;
-  padding: 16px 32px;
 }
 
 .todo-section {
