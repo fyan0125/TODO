@@ -30,6 +30,7 @@ export class Login implements OnInit {
   password = '';
   confirmPassword = '';
   isRegister = false;
+  googleLoading = false;
 
   private auth = inject(Auth);
   private router = inject(Router);
@@ -58,13 +59,14 @@ export class Login implements OnInit {
       });
       window.google.accounts.id.renderButton(
         document.getElementById('google-signin-btn'),
-        { theme: 'outline', size: 'large' }
+        { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' }
       );
       window.google.accounts.id.prompt();
     }
   }
 
   async handleGoogleCredential(credential: string) {
+    this.googleLoading = true;
     try {
       const provider = new GoogleAuthProvider();
       const firebaseCredential = GoogleAuthProvider.credential(credential);
@@ -72,6 +74,8 @@ export class Login implements OnInit {
       this.router.navigate(['/']);
     } catch (error: any) {
       alert(error.message || 'Google 登入失敗');
+    } finally {
+      this.googleLoading = false;
     }
   }
 

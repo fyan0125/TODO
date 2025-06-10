@@ -1,0 +1,16 @@
+.todo-filter-bar {
+  display: flex;
+  gap: 32px;
+  margin: 16px 0;
+}
+.todo-filter-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+}

@@ -1,0 +1,24 @@
+<div class="todo-filter-bar">
+  <div class="todo-filter-group">
+    <span>分類</span>
+    @for (tag of tagOptions; track tag) {
+      <app-filter-button
+        [selected]="tagFilter.includes(tag)"
+        [label]="tag"
+        color="primary"
+        (clickBtn)="toggleTag(tag)"
+      />
+    }
+  </div>
+  <div class="todo-filter-group">
+    <span>重要性</span>
+    @for (priority of priorityOptions; track priority) {
+      <app-filter-button
+        [selected]="priorityFilter.includes(priority)"
+        [label]="priority"
+        color="accent"
+        (clickBtn)="togglePriority(priority)"
+      />
+    }
+  </div>
+</div>

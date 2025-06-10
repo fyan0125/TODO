@@ -1,4 +1,5 @@
 import { Component, signal, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,13 +15,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddTodoDialog } from '../add-todo-dialog/add-todo-dialog';
 import { ConfirmDeleteDialog } from '../confirm-delete-dialog/confirm-delete-dialog';
 import sortBy from 'lodash-es/sortBy';
-import { TodoItemComponent } from '../../../shared/components/todo-item/todo-item';
+import { TodoItemComponent } from '../todo-item/todo-item';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { TodoItem } from '../../../core/models/todo-item.model';
 import { TodoFirestoreService } from '../../../core/services/todo-firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { Header } from '../../../shared/components/header/header';
+import { TodoFilterBar } from '../todo-filter-bar/todo-filter-bar';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
@@ -45,6 +46,7 @@ const PRIORITY_ORDER: Record<TodoPriority, number> = {
   selector: 'app-todo-list',
   standalone: true,
   imports: [
+    CommonModule,
     MatListModule,
     MatCheckboxModule,
     MatButtonModule,
@@ -58,7 +60,7 @@ const PRIORITY_ORDER: Record<TodoPriority, number> = {
     FormsModule,
     TodoItemComponent,
     MatPaginatorModule,
-    Header,
+    TodoFilterBar,
   ],
   templateUrl: './todo-list.html',
   styleUrls: ['./todo-list.scss'],
@@ -69,15 +71,52 @@ export class TodoListComponent {
   editTag = signal<TodoTag>(TodoTag.Work);
   editPriority = signal<TodoPriority>(TodoPriority.Medium);
 
+  tagOptions: TodoTag[] = [TodoTag.Work, TodoTag.Personal, TodoTag.Family];
+  tagFilter = signal<TodoTag[]>([TodoTag.Work, TodoTag.Personal, TodoTag.Family]);
+  priorityOptions: TodoPriority[] = [TodoPriority.High, TodoPriority.Medium, TodoPriority.Low];
+  priorityFilter = signal<TodoPriority[]>([TodoPriority.High, TodoPriority.Medium, TodoPriority.Low]);
+
+  toggleTag(tag: TodoTag) {
+    const current = this.tagFilter().slice();
+    const idx = current.indexOf(tag);
+    if (idx > -1) {
+      current.splice(idx, 1);
+    } else {
+      current.push(tag);
+    }
+    this.tagFilter.set(current);
+    this.uncompletedPageIndex.set(0);
+    this.completedPageIndex.set(0);
+  }
+
+  togglePriority(priority: TodoPriority) {
+    const current = this.priorityFilter().slice();
+    const idx = current.indexOf(priority);
+    if (idx > -1) {
+      current.splice(idx, 1);
+    } else {
+      current.push(priority);
+    }
+    this.priorityFilter.set(current);
+    this.uncompletedPageIndex.set(0);
+    this.completedPageIndex.set(0);
+  }
+
+  filteredTodos = computed(() => {
+    return this.todos().filter(t =>
+      this.tagFilter().includes(t.tag) && this.priorityFilter().includes(t.priority)
+    );
+  });
+
   sortedUncompletedTodos = computed(() =>
     sortBy(
-      this.todos().filter((t: TodoItem) => !t.completed),
+      this.filteredTodos().filter((t: TodoItem) => !t.completed),
       (t: TodoItem) => PRIORITY_ORDER[t.priority]
     )
   );
   sortedCompletedTodos = computed(() =>
     sortBy(
-      this.todos().filter((t: TodoItem) => t.completed),
+      this.filteredTodos().filter((t: TodoItem) => t.completed),
       (t: TodoItem) => PRIORITY_ORDER[t.priority]
     )
   );
@@ -122,11 +161,10 @@ export class TodoListComponent {
   }
 
   toggleCompleted(todo: TodoItem) {
-    this.todos.update((list) =>
-      list.map((t) =>
-        t.id === todo.id ? { ...t, completed: !t.completed } : t
-      )
-    );
+    this.firestore.updateTodo(String(todo.id), { completed: !todo.completed })
+      .then(() => {
+        this.toast.success('已更新完成狀態');
+      });
   }
 
   openAddDialog() {
@@ -191,10 +229,6 @@ export class TodoListComponent {
     this.todos.update((list) =>
       list.map((t) => (t.id === todo.id ? { ...t, editing: false } : t))
     );
-  }
-
-  getTagColor(tag: TodoTag): 'primary' | 'accent' | 'warn' | 'default' {
-    return TAG_COLORS[tag] as 'primary' | 'accent' | 'warn' | 'default';
   }
 
   getPriorityColor(
