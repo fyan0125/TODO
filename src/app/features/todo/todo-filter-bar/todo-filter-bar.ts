@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -12,16 +12,16 @@ import { FilterButton } from '../../../shared/components/filter-button/filter-bu
   styleUrl: './todo-filter-bar.scss',
 })
 export class TodoFilterBar {
-  @Input() tagFilter: TodoTag[] = [TodoTag.Work, TodoTag.Personal, TodoTag.Family];
-  @Input() priorityFilter: TodoPriority[] = [TodoPriority.High, TodoPriority.Medium, TodoPriority.Low];
-  @Output() tagFilterChange = new EventEmitter<TodoTag[]>();
-  @Output() priorityFilterChange = new EventEmitter<TodoPriority[]>();
+  tagFilter = input<TodoTag[]>([TodoTag.Work, TodoTag.Personal, TodoTag.Family]);
+  priorityFilter = input<TodoPriority[]>([TodoPriority.High, TodoPriority.Medium, TodoPriority.Low]);
+  tagFilterChange = output<TodoTag[]>();
+  priorityFilterChange = output<TodoPriority[]>();
 
   tagOptions: TodoTag[] = [TodoTag.Work, TodoTag.Personal, TodoTag.Family];
   priorityOptions: TodoPriority[] = [TodoPriority.High, TodoPriority.Medium, TodoPriority.Low];
 
   toggleTag(tag: TodoTag) {
-    const current = [...this.tagFilter];
+    const current = [...this.tagFilter()];
     const idx = current.indexOf(tag);
     if (idx > -1) {
       current.splice(idx, 1);
@@ -32,7 +32,7 @@ export class TodoFilterBar {
   }
 
   togglePriority(priority: TodoPriority) {
-    const current = [...this.priorityFilter];
+    const current = [...this.priorityFilter()];
     const idx = current.indexOf(priority);
     if (idx > -1) {
       current.splice(idx, 1);

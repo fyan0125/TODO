@@ -136,12 +136,8 @@ export class TodoListComponent {
     return all.slice(start, start + this.pageSize);
   });
 
-  get uncompletedTotalLength() {
-    return this.sortedUncompletedTodos().length;
-  }
-  get completedTotalLength() {
-    return this.sortedCompletedTodos().length;
-  }
+  uncompletedTotalLength = computed(() => this.sortedUncompletedTodos().length);
+  completedTotalLength = computed(() => this.sortedCompletedTodos().length);
 
   onUncompletedPage(event: { pageIndex: number }) {
     this.uncompletedPageIndex.set(event.pageIndex);

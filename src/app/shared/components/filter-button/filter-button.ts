@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -10,10 +10,10 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './filter-button.scss',
 })
 export class FilterButton {
-  @Input() selected = false;
-  @Input() label = '';
-  @Input() icon: string | null = null;
-  @Input() color: 'primary' | 'accent' | 'warn' | undefined;
-  @Input() disabled = false;
-  @Output() clickBtn = new EventEmitter<void>();
+  selected = input<boolean>(false);
+  label = input<string>('');
+  icon = input<string | null>(null);
+  color = input<string>('primary');
+  disabled = input<boolean>(false);
+  clickBtn = output<void>();
 }

@@ -32,7 +32,7 @@
         </app-todo-item>
         }
       </mat-list>
-      @if(uncompletedTotalLength > pageSize) {
+      @if(uncompletedTotalLength() > pageSize) {
       <mat-paginator
         [length]="uncompletedTotalLength"
         [pageSize]="pageSize"
@@ -59,7 +59,7 @@
         </app-todo-item>
         }
       </mat-list>
-      @if(completedTotalLength > pageSize) {
+      @if(completedTotalLength() > pageSize) {
       <mat-paginator
         [length]="completedTotalLength"
         [pageSize]="pageSize"
