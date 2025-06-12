@@ -10,13 +10,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule, Router } from '@angular/router';
-import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from '@angular/fire/auth';
+import {
+  Auth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithCredential,
+  GoogleAuthProvider,
+} from '@angular/fire/auth';
 import { LoadingService } from '../../core/services/loading.service';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [
     FormsModule,
     MatFormFieldModule,
@@ -28,19 +33,27 @@ import { ToastService } from '../../core/services/toast.service';
   styleUrl: './login.scss',
 })
 export class Login implements OnInit {
-  email = '';
-  password = '';
-  confirmPassword = '';
-  isRegister = false;
-  googleLoading = false;
-
+  // inject
   private auth = inject(Auth);
   private router = inject(Router);
   private loading = inject(LoadingService);
   private toast = inject(ToastService);
 
+  // input/output 無
+
+  // 一般變數
+
+  // signal
+  email = signal('');
+  password = signal('');
+  confirmPassword = signal('');
+  isRegister = signal(false);
+  googleLoading = signal(false);
+
+  // computed 無
+
+  // 生命週期
   ngOnInit(): void {
-    // 載入Google登入SDK
     if (!document.getElementById('gsi-client')) {
       const script = document.createElement('script');
       script.src = 'https://accounts.google.com/gsi/client';
@@ -53,24 +66,31 @@ export class Login implements OnInit {
     }
   }
 
+  // public function
   renderGoogleButton() {
     if (window.google && window.google.accounts && window.google.accounts.id) {
       window.google.accounts.id.initialize({
-        client_id: '364891571168-pt40epodgjvvei8g184aa1h0eae6ddi8.apps.googleusercontent.com',
+        client_id:
+          '364891571168-pt40epodgjvvei8g184aa1h0eae6ddi8.apps.googleusercontent.com',
         callback: (response: any) => {
           this.handleGoogleCredential(response.credential);
-        }
+        },
       });
       window.google.accounts.id.renderButton(
         document.getElementById('google-signin-btn'),
-        { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' }
+        {
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'pill',
+        }
       );
       window.google.accounts.id.prompt();
     }
   }
 
   async handleGoogleCredential(credential: string) {
-    this.googleLoading = true;
+    this.googleLoading.set(true);
     this.loading.show();
     try {
       const provider = new GoogleAuthProvider();
@@ -80,25 +100,25 @@ export class Login implements OnInit {
     } catch (error: any) {
       this.toast.error(error.message || 'Google 登入失敗');
     } finally {
-      this.googleLoading = false;
+      this.googleLoading.set(false);
       this.loading.hide();
     }
   }
 
   switchToRegister(event: Event) {
     event.preventDefault();
-    this.isRegister = true;
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
+    this.isRegister.set(true);
+    this.email.set('');
+    this.password.set('');
+    this.confirmPassword.set('');
   }
 
   switchToLogin(event: Event) {
     event.preventDefault();
-    this.isRegister = false;
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
+    this.isRegister.set(false);
+    this.email.set('');
+    this.password.set('');
+    this.confirmPassword.set('');
   }
 
   async onLogin() {
@@ -106,8 +126,8 @@ export class Login implements OnInit {
     try {
       await signInWithEmailAndPassword(
         this.auth,
-        this.email,
-        this.password
+        this.email(),
+        this.password()
       );
       this.router.navigate(['/']);
     } catch (error: any) {
@@ -118,13 +138,17 @@ export class Login implements OnInit {
   }
 
   async onRegister() {
-    if (this.password !== this.confirmPassword) {
+    if (this.password() !== this.confirmPassword()) {
       this.toast.error('密碼與確認密碼不一致');
       return;
     }
     this.loading.show();
     try {
-      await createUserWithEmailAndPassword(this.auth, this.email, this.password);
+      await createUserWithEmailAndPassword(
+        this.auth,
+        this.email(),
+        this.password()
+      );
       this.router.navigate(['/']);
     } catch (error: any) {
       this.toast.error(error.message || '註冊失敗');
@@ -132,4 +156,5 @@ export class Login implements OnInit {
       this.loading.hide();
     }
   }
+  // private function（如有）
 }

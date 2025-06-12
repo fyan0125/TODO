@@ -11,12 +11,6 @@ export class TodoFirestoreService {
   private auth = inject(Auth);
   private loading = inject(LoadingService);
 
-  private getUid(): string {
-    const uid = this.auth.currentUser?.uid;
-    if (!uid) throw new Error('尚未登入，無法操作 TODO');
-    return uid;
-  }
-
   getTodos(): any {
     const uid = this.getUid();
     const todosRef = collection(this.firestore, `users/${uid}/todos`);
@@ -54,5 +48,11 @@ export class TodoFirestoreService {
     } finally {
       this.loading.hide();
     }
+  }
+
+  private getUid(): string {
+    const uid = this.auth.currentUser?.uid;
+    if (!uid) throw new Error('尚未登入，無法操作 TODO');
+    return uid;
   }
 }

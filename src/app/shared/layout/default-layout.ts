@@ -4,11 +4,8 @@ import { Header } from '../components/header/header';
 
 @Component({
   selector: 'app-default-layout',
-  standalone: true,
   imports: [Header, RouterOutlet],
   templateUrl: './default-layout.html',
-  styleUrl: './default-layout.scss'
+  styleUrl: './default-layout.scss',
 })
-export class DefaultLayout {
-
-}
+export class DefaultLayout {}

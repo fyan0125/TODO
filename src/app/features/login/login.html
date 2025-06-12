@@ -1,5 +1,5 @@
 <div class="auth-container">
-  @if (!isRegister) {
+  @if (!isRegister()) {
     <h2>登入</h2>
     <form #loginForm="ngForm" (ngSubmit)="onLogin()">
       <mat-form-field appearance="fill">
@@ -16,7 +16,7 @@
       <span>還沒有帳號？<a href="#" (click)="switchToRegister($event)">註冊</a></span>
     </div>
   }
-  @if (isRegister) {
+  @if (isRegister()) {
     <h2>註冊</h2>
     <form #registerForm="ngForm" (ngSubmit)="onRegister()">
       <mat-form-field appearance="fill">

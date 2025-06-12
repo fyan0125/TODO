@@ -4,7 +4,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-filter-button',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './filter-button.html',
   styleUrl: './filter-button.scss',

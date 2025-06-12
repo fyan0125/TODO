@@ -6,19 +6,30 @@ import { FilterButton } from '../../../shared/components/filter-button/filter-bu
 
 @Component({
   selector: 'app-todo-filter-bar',
-  standalone: true,
   imports: [MatButtonModule, CommonModule, FilterButton],
   templateUrl: './todo-filter-bar.html',
   styleUrl: './todo-filter-bar.scss',
 })
 export class TodoFilterBar {
-  tagFilter = input<TodoTag[]>([TodoTag.Work, TodoTag.Personal, TodoTag.Family]);
-  priorityFilter = input<TodoPriority[]>([TodoPriority.High, TodoPriority.Medium, TodoPriority.Low]);
+  tagFilter = input<TodoTag[]>([
+    TodoTag.Work,
+    TodoTag.Personal,
+    TodoTag.Family,
+  ]);
+  priorityFilter = input<TodoPriority[]>([
+    TodoPriority.High,
+    TodoPriority.Medium,
+    TodoPriority.Low,
+  ]);
   tagFilterChange = output<TodoTag[]>();
   priorityFilterChange = output<TodoPriority[]>();
 
   tagOptions: TodoTag[] = [TodoTag.Work, TodoTag.Personal, TodoTag.Family];
-  priorityOptions: TodoPriority[] = [TodoPriority.High, TodoPriority.Medium, TodoPriority.Low];
+  priorityOptions: TodoPriority[] = [
+    TodoPriority.High,
+    TodoPriority.Medium,
+    TodoPriority.Low,
+  ];
 
   toggleTag(tag: TodoTag) {
     const current = [...this.tagFilter()];

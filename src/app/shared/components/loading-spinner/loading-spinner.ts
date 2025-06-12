@@ -4,12 +4,18 @@ import { LoadingService } from '../../../core/services/loading.service';
 
 @Component({
   selector: 'app-loading-spinner',
-  standalone: true,
   imports: [MatProgressSpinnerModule],
   templateUrl: './loading-spinner.html',
   styleUrl: './loading-spinner.scss',
 })
 export class LoadingSpinnerComponent {
-  loadingService = inject(LoadingService);
+  // inject
+  private loadingService = inject(LoadingService);
+
+  // input/output/一般變數/signal 無
+
+  // computed
   isLoading = this.loadingService.isLoading;
+
+  // 生命週期/公有/私有 function 無
 }

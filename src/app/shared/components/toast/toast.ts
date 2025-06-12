@@ -4,10 +4,9 @@ import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-toast',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './toast.html',
-  styleUrls: ['./toast.scss']
+  styleUrls: ['./toast.scss'],
 })
 export class ToastComponent {
   public toast = inject(ToastService);

@@ -9,10 +9,16 @@ import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 
 @Component({
   selector: 'app-add-todo-dialog',
-  standalone: true,
-  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, FormsModule],
+  imports: [
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    FormsModule,
+  ],
   templateUrl: './add-todo-dialog.html',
-  styleUrls: ['./add-todo-dialog.scss']
+  styleUrls: ['./add-todo-dialog.scss'],
 })
 export class AddTodoDialog {
   title = signal('');
@@ -23,7 +29,11 @@ export class AddTodoDialog {
 
   submit() {
     if (this.title().trim()) {
-      this.dialogRef.close({ title: this.title(), tag: this.tag(), priority: this.priority() });
+      this.dialogRef.close({
+        title: this.title(),
+        tag: this.tag(),
+        priority: this.priority(),
+      });
     }
   }
 

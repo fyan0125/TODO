@@ -6,10 +6,9 @@ import { LoadingService } from '../../../core/services/loading.service';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [MatButtonModule],
   templateUrl: './header.html',
-  styleUrl: './header.scss'
+  styleUrl: './header.scss',
 })
 export class Header {
   private auth = inject(Auth);

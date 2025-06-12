@@ -2,9 +2,8 @@ import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-tag',
-  standalone: true,
   templateUrl: './tag.html',
-  styleUrls: ['./tag.scss']
+  styleUrls: ['./tag.scss'],
 })
 export class TagComponent {
   text = input<string>('');

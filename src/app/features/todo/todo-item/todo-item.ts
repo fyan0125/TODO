@@ -12,7 +12,6 @@ import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
 
 @Component({
   selector: 'app-todo-item',
-  standalone: true,
   imports: [
     MatCheckboxModule,
     MatButtonModule,
