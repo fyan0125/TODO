@@ -9,12 +9,7 @@ import { LoadingService } from '../../../core/services/loading.service';
   styleUrl: './loading-spinner.scss',
 })
 export class LoadingSpinnerComponent {
-  // inject
   private loadingService = inject(LoadingService);
 
-  // input/output/一般變數/signal 無
-
   isLoading = this.loadingService.isLoading;
-
-  // 生命週期/公有/私有 function 無
 }

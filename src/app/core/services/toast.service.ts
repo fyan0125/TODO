@@ -12,7 +12,7 @@ export class ToastService {
   messages = signal<ToastMessage[]>([]);
 
   show(msg: ToastMessage) {
-    this.messages.update(list => [...list, msg]);
+    this.messages.update((list) => [...list, msg]);
     setTimeout(() => this.remove(msg), msg.duration ?? 3000);
   }
 
@@ -30,6 +30,6 @@ export class ToastService {
   }
 
   remove(msg: ToastMessage) {
-    this.messages.update(list => list.filter(m => m !== msg));
+    this.messages.update((list) => list.filter((m) => m !== msg));
   }
 }

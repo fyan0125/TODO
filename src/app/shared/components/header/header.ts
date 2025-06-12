@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { Auth, signOut } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +14,11 @@ export class Header {
   private auth = inject(Auth);
   private router = inject(Router);
   private loading = inject(LoadingService);
+
+  user = signal(this.auth.currentUser);
+  userName = computed(
+    () => this.user()?.displayName || this.user()?.email || ''
+  );
 
   async logout() {
     this.loading.show();

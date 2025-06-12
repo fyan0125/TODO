@@ -19,6 +19,7 @@ export class ConfirmDeleteDialog {
   confirm() {
     this.dialogRef.close(true);
   }
+
   cancel() {
     this.dialogRef.close(false);
   }

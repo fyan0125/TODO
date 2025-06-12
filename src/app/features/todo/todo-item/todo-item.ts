@@ -48,9 +48,11 @@ export class TodoItemComponent {
     this.editTag.set(this.todo().tag);
     this.editPriority.set(this.todo().priority);
   }
+
   cancelEdit() {
     this.editMode.set(false);
   }
+
   saveEdit() {
     if (this.editTitle().trim()) {
       this.onSave.emit({
@@ -61,12 +63,15 @@ export class TodoItemComponent {
       this.editMode.set(false);
     }
   }
+
   toggleCompleted() {
     this.onToggleCompleted.emit(this.todo());
   }
+
   delete() {
     this.onDelete.emit();
   }
+
   onTitleInput(event: Event) {
     const value = (event.target as HTMLInputElement)?.value ?? '';
     this.editTitle.set(value);

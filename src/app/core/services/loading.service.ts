@@ -10,7 +10,6 @@ export class LoadingService {
 
   show() {
     this._count.update((count) => count + 1);
-    console.log('show', this._count());
   }
 
   hide() {

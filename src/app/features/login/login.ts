@@ -19,6 +19,7 @@ import {
 } from '@angular/fire/auth';
 import { LoadingService } from '../../core/services/loading.service';
 import { ToastService } from '../../core/services/toast.service';
+import { runInInjectionContext, EnvironmentInjector } from '@angular/core';
 
 @Component({
   selector: 'app-login',
@@ -33,15 +34,11 @@ import { ToastService } from '../../core/services/toast.service';
   styleUrl: './login.scss',
 })
 export class Login implements OnInit {
-  // inject
   private auth = inject(Auth);
   private router = inject(Router);
   private loading = inject(LoadingService);
   private toast = inject(ToastService);
-
-  // input/output 無
-
-  // 一般變數
+  private injector = inject(EnvironmentInjector);
 
   email = signal('');
   password = signal('');
@@ -49,9 +46,6 @@ export class Login implements OnInit {
   isRegister = signal(false);
   googleLoading = signal(false);
 
-  // computed 無
-
-  // 生命週期
   ngOnInit(): void {
     if (!document.getElementById('gsi-client')) {
       const script = document.createElement('script');
@@ -91,9 +85,10 @@ export class Login implements OnInit {
     this.googleLoading.set(true);
     this.loading.show();
     try {
-      const provider = new GoogleAuthProvider();
       const firebaseCredential = GoogleAuthProvider.credential(credential);
-      await signInWithCredential(this.auth, firebaseCredential);
+      await runInInjectionContext(this.injector, () =>
+        signInWithCredential(this.auth, firebaseCredential)
+      );
       this.router.navigate(['/']);
     } catch (error: any) {
       this.toast.error(error.message || 'Google 登入失敗');
