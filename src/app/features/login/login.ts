@@ -11,6 +11,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule, Router } from '@angular/router';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from '@angular/fire/auth';
+import { LoadingService } from '../../core/services/loading.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -34,6 +36,8 @@ export class Login implements OnInit {
 
   private auth = inject(Auth);
   private router = inject(Router);
+  private loading = inject(LoadingService);
+  private toast = inject(ToastService);
 
   ngOnInit(): void {
     // 載入Google登入SDK
@@ -67,15 +71,17 @@ export class Login implements OnInit {
 
   async handleGoogleCredential(credential: string) {
     this.googleLoading = true;
+    this.loading.show();
     try {
       const provider = new GoogleAuthProvider();
       const firebaseCredential = GoogleAuthProvider.credential(credential);
       await signInWithCredential(this.auth, firebaseCredential);
       this.router.navigate(['/']);
     } catch (error: any) {
-      alert(error.message || 'Google 登入失敗');
+      this.toast.error(error.message || 'Google 登入失敗');
     } finally {
       this.googleLoading = false;
+      this.loading.hide();
     }
   }
 
@@ -96,6 +102,7 @@ export class Login implements OnInit {
   }
 
   async onLogin() {
+    this.loading.show();
     try {
       await signInWithEmailAndPassword(
         this.auth,
@@ -104,20 +111,25 @@ export class Login implements OnInit {
       );
       this.router.navigate(['/']);
     } catch (error: any) {
-      alert(error.message || '登入失敗');
+      this.toast.error(error.message || '登入失敗');
+    } finally {
+      this.loading.hide();
     }
   }
 
   async onRegister() {
     if (this.password !== this.confirmPassword) {
-      alert('密碼與確認密碼不一致');
+      this.toast.error('密碼與確認密碼不一致');
       return;
     }
+    this.loading.show();
     try {
       await createUserWithEmailAndPassword(this.auth, this.email, this.password);
       this.router.navigate(['/']);
     } catch (error: any) {
-      alert(error.message || '註冊失敗');
+      this.toast.error(error.message || '註冊失敗');
+    } finally {
+      this.loading.hide();
     }
   }
 }

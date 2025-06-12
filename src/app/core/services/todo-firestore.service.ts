@@ -3,11 +3,13 @@ import { Firestore, collectionData, collection, addDoc, doc, updateDoc, deleteDo
 import { TodoItem } from '../models/todo-item.model';
 import { Observable } from 'rxjs';
 import { Auth } from '@angular/fire/auth';
+import { LoadingService } from './loading.service';
 
 @Injectable({ providedIn: 'root' })
 export class TodoFirestoreService {
   private firestore = inject(Firestore);
   private auth = inject(Auth);
+  private loading = inject(LoadingService);
 
   private getUid(): string {
     const uid = this.auth.currentUser?.uid;
@@ -21,21 +23,36 @@ export class TodoFirestoreService {
     return collectionData(todosRef, { idField: 'id' });
   }
 
-  addTodo(todo: Omit<TodoItem, 'id'>): Promise<DocumentReference> {
-    const uid = this.getUid();
-    const todosRef = collection(this.firestore, `users/${uid}/todos`);
-    return addDoc(todosRef, todo);
+  async addTodo(todo: Omit<TodoItem, 'id'>): Promise<DocumentReference> {
+    this.loading.show();
+    try {
+      const uid = this.getUid();
+      const todosRef = collection(this.firestore, `users/${uid}/todos`);
+      return await addDoc(todosRef, todo);
+    } finally {
+      this.loading.hide();
+    }
   }
 
-  updateTodo(id: string, data: Partial<TodoItem>): Promise<void> {
-    const uid = this.getUid();
-    const todoDoc = doc(this.firestore, `users/${uid}/todos/${id}`);
-    return updateDoc(todoDoc, data);
+  async updateTodo(id: string, data: Partial<TodoItem>): Promise<void> {
+    this.loading.show();
+    try {
+      const uid = this.getUid();
+      const todoDoc = doc(this.firestore, `users/${uid}/todos/${id}`);
+      return await updateDoc(todoDoc, data);
+    } finally {
+      this.loading.hide();
+    }
   }
 
-  deleteTodo(id: string): Promise<void> {
-    const uid = this.getUid();
-    const todoDoc = doc(this.firestore, `users/${uid}/todos/${id}`);
-    return deleteDoc(todoDoc);
+  async deleteTodo(id: string): Promise<void> {
+    this.loading.show();
+    try {
+      const uid = this.getUid();
+      const todoDoc = doc(this.firestore, `users/${uid}/todos/${id}`);
+      return await deleteDoc(todoDoc);
+    } finally {
+      this.loading.hide();
+    }
   }
 }

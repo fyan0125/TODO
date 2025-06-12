@@ -22,6 +22,7 @@ import { TodoFirestoreService } from '../../../core/services/todo-firestore.serv
 import { ToastService } from '../../../core/services/toast.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TodoFilterBar } from '../todo-filter-bar/todo-filter-bar';
+import { LoadingService } from '../../../core/services/loading.service';
 
 const TAG_COLORS: Record<TodoTag, 'primary' | 'accent' | 'warn' | 'default'> = {
   [TodoTag.Work]: 'primary',
@@ -149,10 +150,19 @@ export class TodoListComponent {
   private firestore = inject(TodoFirestoreService);
   private toast = inject(ToastService);
   private dialog = inject(MatDialog);
+  private loading = inject(LoadingService);
 
-  constructor() {
-    this.firestore.getTodos().subscribe((todos: TodoItem[]) => {
-      this.todos.set(todos);
+  ngOnInit() {
+    this.loading.show();
+    this.firestore.getTodos().subscribe({
+      next: (data: TodoItem[]) => {
+        this.todos.set(data);
+        this.loading.hide();
+      },
+      error: (err: any) => {
+        this.loading.hide();
+        this.toast.error(err?.message || '載入 TODO 失敗');
+      }
     });
   }
 
