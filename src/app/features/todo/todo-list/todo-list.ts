@@ -78,7 +78,6 @@ export class TodoListComponent {
   ];
   pageSize = 10;
 
-  // signal
   todos = signal<TodoItem[]>([]);
   editTitle = signal<string>('');
   editTag = signal<TodoTag>(TodoTag.Work);
@@ -96,7 +95,6 @@ export class TodoListComponent {
   uncompletedPageIndex = signal(0);
   completedPageIndex = signal(0);
 
-  // computed
   filteredTodos = computed(() =>
     this.todos().filter(
       (t) =>
@@ -144,7 +142,6 @@ export class TodoListComponent {
     });
   }
 
-  // public function
   onUncompletedPage(event: { pageIndex: number }) {
     this.uncompletedPageIndex.set(event.pageIndex);
   }
@@ -265,5 +262,4 @@ export class TodoListComponent {
         this.toast.success('編輯項目成功');
       });
   }
-  // private function（如有）
 }

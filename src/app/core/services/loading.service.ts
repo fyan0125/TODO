@@ -4,25 +4,20 @@ import { Injectable, signal, computed } from '@angular/core';
   providedIn: 'root',
 })
 export class LoadingService {
-  // signal
   private _count = signal(0);
 
-  // computed
   readonly isLoading = computed(() => this._count() > 0);
 
-  // public function
   show() {
-    this._count.update(count => count + 1);
+    this._count.update((count) => count + 1);
     console.log('show', this._count());
   }
 
   hide() {
-    this._count.update(count => Math.max(0, count - 1));
+    this._count.update((count) => Math.max(0, count - 1));
   }
 
   reset() {
     this._count.set(0);
   }
-
-  // private function（如有）
 }

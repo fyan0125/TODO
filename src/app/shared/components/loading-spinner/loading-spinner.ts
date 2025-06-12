@@ -14,7 +14,6 @@ export class LoadingSpinnerComponent {
 
   // input/output/一般變數/signal 無
 
-  // computed
   isLoading = this.loadingService.isLoading;
 
   // 生命週期/公有/私有 function 無

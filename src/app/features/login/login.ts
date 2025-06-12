@@ -43,7 +43,6 @@ export class Login implements OnInit {
 
   // 一般變數
 
-  // signal
   email = signal('');
   password = signal('');
   confirmPassword = signal('');
@@ -66,7 +65,6 @@ export class Login implements OnInit {
     }
   }
 
-  // public function
   renderGoogleButton() {
     if (window.google && window.google.accounts && window.google.accounts.id) {
       window.google.accounts.id.initialize({
@@ -156,5 +154,4 @@ export class Login implements OnInit {
       this.loading.hide();
     }
   }
-  // private function（如有）
 }

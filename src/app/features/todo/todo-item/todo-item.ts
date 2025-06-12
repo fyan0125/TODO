@@ -9,6 +9,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { TagComponent } from '../../../shared/components/tag/tag';
 import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
+import { TodoItem } from '../../../core/models/todo-item.model';
 
 @Component({
   selector: 'app-todo-item',
@@ -27,7 +28,7 @@ import { TodoTag, TodoPriority } from '../../../core/enums/todo.enums';
   styleUrls: ['./todo-item.scss'],
 })
 export class TodoItemComponent {
-  todo = input<any>();
+  todo = input.required<TodoItem>();
   priorityColor = input<'primary' | 'accent' | 'warn' | 'default'>('default');
   editMode = signal(false);
   editTitle = signal('');
@@ -37,7 +38,7 @@ export class TodoItemComponent {
   tagOptions = [TodoTag.Work, TodoTag.Personal, TodoTag.Family];
   priorityOptions = [TodoPriority.High, TodoPriority.Medium, TodoPriority.Low];
 
-  onToggleCompleted = output<any>();
+  onToggleCompleted = output<TodoItem>();
   onDelete = output<void>();
   onSave = output<{ title: string; tag: TodoTag; priority: TodoPriority }>();
 
