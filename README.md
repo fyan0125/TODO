@@ -1,30 +1,34 @@
 # TODO 網站專案
 
 ## 專案目標
+
 - 開發一個具備 CRUD（建立、讀取、更新、刪除）功能的 TODO 網站。
 - 提供現代化、易用的 UI/UX。
+- 串接 Firestore API 專注於前端開發。
 
 ## 使用技術
+
 - Angular 20
 - Angular Material
-- Lodash
+- lodash-es
 - TypeScript
 
 ## Coding 規範
-- 優先採用 Angular 20 新語法（如 @if、@for 等）。
-- 所有 API 呼叫統一由 API Service 管理，並提供可自訂 params 與路徑的彈性方法。
-- 組件、服務、模組命名需語意明確，遵循 Angular 官方命名慣例。
+
+- 優先採用 Angular 新語法（如 @if、@for 等）。
 - 變數、函式名稱採用 camelCase。
-- 重要決策與技術選型需於 README 記錄。
 - 盡量使用 Angular Material 元件實現 UI。
 - 共用邏輯抽離為 Service 或 Utility，避免重複程式碼。
 
-## API Service 設計原則
-- 所有 API 請求統一由 API Service 處理。
-- API Service 提供可傳入 params（查詢參數、body 等）與路徑的彈性方法。
-- 方便未來擴充與維護。
+## 使用方式
+
+1. 建立 Firebase 專案
+2. 於[Config 檔](./src/app/app.config.ts)中替換 firebaseConfig
+3. 開啟 Firestore 服務，並將資料庫名從 `(default)` 改為 `todos`
+4. 開啟 Authencation 服務，於登入方式選擇 `電子郵件/密碼` 及 `Google`
 
 ## 專案資料夾結構
+
 ```
 - 📂 my-angular-app
   - 📂 e2e
@@ -58,8 +62,6 @@
           - 📄 app.component.html
           - 📄 app.component.scss
           - 📄 app.component.ts
-          - 📄 app.module.ts (若之後完全使用Standalone就不會有此檔案）
-          - 📄 app.routing-module.ts (若之後完全使用Standalone就不會有此檔案）
      - 📂 assets(靜態資源)
          - 📂 data (API假資料)
          - 📂 scripts (外部js)
