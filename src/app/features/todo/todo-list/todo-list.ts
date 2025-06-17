@@ -89,25 +89,18 @@ export class TodoListComponent {
     TodoPriority.Medium,
     TodoPriority.Low,
   ]);
-  uncompletedPageIndex = signal(0);
-  completedPageIndex = signal(0);
+  uncompletedPageIndex = signal<number>(0);
+  completedPageIndex = signal<number>(0);
 
-  filteredTodos = computed(() =>
-    this.todos().filter(
-      (t) =>
-        this.tagFilter().includes(t.tag) &&
-        this.priorityFilter().includes(t.priority)
-    )
-  );
   sortedUncompletedTodos = computed(() =>
     sortBy(
-      this.filteredTodos().filter((t) => !t.completed),
+      this.todos().filter((t) => !t.completed),
       (t) => PRIORITY_ORDER[t.priority]
     )
   );
   sortedCompletedTodos = computed(() =>
     sortBy(
-      this.filteredTodos().filter((t) => t.completed),
+      this.todos().filter((t) => t.completed),
       (t) => PRIORITY_ORDER[t.priority]
     )
   );
@@ -149,6 +142,7 @@ export class TodoListComponent {
   }
 
   onUncompletedPage(event: { pageIndex: number }) {
+    console.log('onUncompletedPage', event);
     this.uncompletedPageIndex.set(event.pageIndex);
   }
 

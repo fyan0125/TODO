@@ -6,10 +6,27 @@
 />
 
 <div class="todo-layout">
+  <ng-container
+    *ngTemplateOutlet="todoSection; context: { title: '未完成', $implicit: pagedUncompletedTodos(), totalLength: uncompletedTotalLength(), pageIndex: uncompletedPageIndex(), onPage: onUncompletedPage.bind(this) }"
+  ></ng-container>
+  <ng-container
+    *ngTemplateOutlet="todoSection; context: { title: '已完成', $implicit: pagedCompletedTodos(), totalLength: completedTotalLength(), pageIndex: completedPageIndex(), onPage: onCompletedPage.bind(this) }"
+  ></ng-container>
+</div>
+
+<ng-template
+  #todoSection
+  let-todos
+  let-title="title"
+  let-totalLength="totalLength"
+  let-pageIndex="pageIndex"
+  let-onPage="onPage"
+>
   <section class="todo-section">
     <mat-card class="todo-card">
       <div class="todo-card__title-row">
-        <mat-card-title class="todo-card__title">待辦事項</mat-card-title>
+        <mat-card-title class="todo-card__title">{{ title }}</mat-card-title>
+        @if(title === '未完成') {
         <button
           mat-raised-button
           color="primary"
@@ -18,56 +35,27 @@
         >
           <mat-icon>add</mat-icon> 新增
         </button>
+        }
       </div>
-      <mat-list>
-        @for (todo of pagedUncompletedTodos(); track todo.id) {
-        <app-todo-item
-          [todo]="todo"
-          [priorityColor]="getPriorityColor(todo.priority)"
-          (onToggleCompleted)="toggleCompleted(todo)"
-          (onDelete)="openDeleteDialog(todo)"
-          (onSave)="saveEditFromChild(todo, $event)"
-          class="todo-item"
-        >
-        </app-todo-item>
-        }
-      </mat-list>
-      @if(uncompletedTotalLength() > pageSize) {
+      @for (todo of todos; track todo.id) {
+      <app-todo-item
+        [todo]="todo"
+        [priorityColor]="getPriorityColor(todo.priority)"
+        (onToggleCompleted)="toggleCompleted(todo)"
+        (onDelete)="openDeleteDialog(todo)"
+        (onSave)="saveEditFromChild(todo, $event)"
+        class="todo-item"
+      >
+      </app-todo-item>
+      } @if(totalLength > pageSize) {
       <mat-paginator
-        [length]="uncompletedTotalLength"
+        [length]="totalLength"
         [pageSize]="pageSize"
-        [pageIndex]="uncompletedPageIndex()"
-        (page)="onUncompletedPage($event)"
+        [pageIndex]="pageIndex"
+        (page)="onPage($event)"
       >
       </mat-paginator>
       }
     </mat-card>
   </section>
-  <section class="todo-section">
-    <mat-card class="todo-card">
-      <mat-card-title class="todo-card__title">已完成</mat-card-title>
-      <mat-list>
-        @for (todo of pagedCompletedTodos(); track todo.id) {
-        <app-todo-item
-          [todo]="todo"
-          [priorityColor]="getPriorityColor(todo.priority)"
-          (onToggleCompleted)="toggleCompleted(todo)"
-          (onDelete)="openDeleteDialog(todo)"
-          (onSave)="saveEditFromChild(todo, $event)"
-          class="todo-item"
-        >
-        </app-todo-item>
-        }
-      </mat-list>
-      @if(completedTotalLength() > pageSize) {
-      <mat-paginator
-        [length]="completedTotalLength"
-        [pageSize]="pageSize"
-        [pageIndex]="completedPageIndex()"
-        (page)="onCompletedPage($event)"
-      >
-      </mat-paginator>
-      }
-    </mat-card>
-  </section>
-</div>
+</ng-template>
